@@ -83,7 +83,7 @@ import java.io.IOException;
 %type Token
 
 SEMI = ";" // Definan aqui sus Tokens/ER por ejemplo: "el token SEMI"
-NUMBER = [0-9]
+NUMBER = [0-9]+(\.[0-9]*)?([eE][+-]?[0-9]+)?
 PLUS = "+"
 MINUS = "-"
 MULT = "*"
@@ -98,28 +98,32 @@ WHITE = (" "|\t|\n)
 
 %%
 
-<YYINITIAL>{SEMI}   { return new Token(Token.SEMI);}
+<YYINITIAL>{SEMI}       { return new Token(Token.SEMI);}
 
-<YYINITIAL>{PLUS}   { return new Token(Token.PLUS);}  
+<YYINITIAL>{PLUS}       { return new Token(Token.PLUS);}  
 
-<YYINITIAL>{MINUS}  { return new Token(Token.MINUS);}
+<YYINITIAL>{MINUS}      { return new Token(Token.MINUS);}
 
-<YYINITIAL>{MULT}   { return new Token(Token.MULT);}
+<YYINITIAL>{MULT}       { return new Token(Token.MULT);}
 
-<YYINITIAL>{DIV}    { return new Token(Token.DIV);}
+<YYINITIAL>{DIV}        { return new Token(Token.DIV);}
 
-<YYINITIAL>{MOD}    { return new Token(Token.MOD);}
+<YYINITIAL>{MOD}        { return new Token(Token.MOD);}
 
-<YYINITIAL>{EXP}    { return new Token(Token.EXP);}
+<YYINITIAL>{EXP}        { return new Token(Token.EXP);}
 
-<YYINITIAL>{LPAREN}    { return new Token(Token.LPAREN);}
+<YYINITIAL>{LPAREN}     { return new Token(Token.LPAREN);}
 
-<YYINITIAL>{RPAREN}    { return new Token(Token.RPAREN);}
+<YYINITIAL>{RPAREN}     { return new Token(Token.RPAREN);}
 
-<YYINITIAL>{NUMBER} { return new Token(Token.NUMBER, yytext()); }
+<YYINITIAL>{ERROR}      { return new Token(Token.ERROR);}
+
+<YYINITIAL>{UNARY}      { return new Token(Token.UNARY);}
+
+<YYINITIAL>{NUMBER}     { return new Token(Token.NUMBER, yytext());}
 
 
-<YYINITIAL>{WHITE}  { /* NO HACER NADA */             }
+<YYINITIAL>{WHITE}      { /* NO HACER NADA */             }
 
-<YYINITIAL>.        { return new Token(Token.ERROR);
-                      /* todo lo demas es ERROR */ }
+<YYINITIAL>.            { return new Token(Token.ERROR);
+                        /* todo lo demas es ERROR */ }

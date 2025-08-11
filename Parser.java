@@ -48,7 +48,7 @@ public class Parser {
         if(this.next < this.tokens.size() && this.tokens.get(this.next).equals(id)) {
             
             // Codigo para el Shunting Yard Algorithm
-            /*
+            
             if (id == Token.NUMBER) {
 				// Encontramos un numero
 				// Debemos guardarlo en el stack de operandos
@@ -67,7 +67,7 @@ public class Parser {
 				// Que pushOp haga el trabajo, no quiero hacerlo yo aqui
 				pushOp( this.tokens.get(this.next) );
 			}
-			*/
+			
 
             this.next++;
             return true;
@@ -129,13 +129,142 @@ public class Parser {
 
     }
 
+    /*
+    * S :: E ;
+    * E ::= T + E | T - E | T
+    * T ::= F * T | F / T | F % T | F
+    * F ::= P ^ F | P
+    * P ::= - P | ( E ) | number
+    */
+
     private boolean S() {
         return E() && term(Token.SEMI);
     }
 
     private boolean E() {
+        int save = this.next;
+
+        this.next = save;
+        if( E1() ) return true;
+
+        this.next = save;
+        if( E2() ) return true;
+
+        this.next = save;
+        if( E3() ) return true;
+
         return false;
     }
 
-    /* TODO: sus otras funciones aqui */
-}
+    // T: N * T | N
+    private boolean T() {
+        int save = this.next;
+
+        this.next = save;
+        if (T1()) return true;
+
+        this.next = save;
+        if (T2()) return true;
+
+        this.next = save;
+        if (T3()) return true;
+
+        this.next = save;
+        if (T4()) return true;
+
+        return false;
+    }
+
+        private boolean F() {
+        int save = this.next;
+
+        this.next = save;
+        if (F1()) return true;
+
+        this.next = save;
+        if (F2()) return true;
+
+        return false;
+    }
+
+        private boolean P() {
+        int save = this.next;
+
+        // UNARY
+        this.next = save;
+        if (term(Token.UNARY) && P()) return true;
+
+        // Parenthesis
+        this.next = save;
+        if (term(Token.LPAREN) && E() && term(Token.RPAREN)) return true;
+
+        // Number
+        this.next = save;
+        if (term(Token.NUMBER)) return true;
+
+        return false;
+    }
+
+
+
+////////////////////////////////////////////////////
+
+
+    // E ::= T + E | T - E | T
+
+    // E1: T + E
+    private boolean E1() {
+        return T() && term(Token.PLUS) && E();
+    }
+
+    // E2: T - E
+    private boolean E2() {
+        return T() && term(Token.MINUS) && E();
+    }
+
+    // E2: T
+    private boolean E3() {
+        return T();
+    }
+///////////////////////////////////////////////////////
+
+
+
+/////////////////////////////////////////////////
+    // T ::= F * T | F / T | F % T | F
+    // T1: F * T
+    private boolean T1() {
+        return F() && term(Token.MULT) && T();
+    }
+
+    // T2: F / T
+    private boolean T2() {
+        return F() && term(Token.DIV) && T();
+    }
+
+    // T3: F % T
+    private boolean T3() {
+        return F() && term(Token.MOD) && T();
+    }
+
+    // T4: F
+    private boolean T4() {
+        return F();
+    }
+////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////
+    // F ::= P ^ F | P
+    private boolean F1() {
+        return P() && term(Token.EXP) && F();
+    }
+
+    // T2: F / T
+    private boolean F2() {
+        return P();
+    }
+////////////////////////////////////////////////////
+
+
+    }
